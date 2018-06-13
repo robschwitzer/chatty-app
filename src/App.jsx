@@ -5,10 +5,10 @@ import Message from './Message.jsx';
 import ChatBar from './ChatBar.jsx';
 
 class App extends Component {
-  constructor(props) {
-    super()
+  constructor (props) {
+    super ()
     this.state = {
-      currentUser: { name: 'Bob' },
+      currentUser: { name: this.username },
       messages: [
         { id: 1,
           username: "Bob",
@@ -16,36 +16,42 @@ class App extends Component {
         },
         { id: 2,
           username: "Anonymous",
-          content: "nice message Bob"
+          content: "nice message Bob 🙄"
         }
       ]
     }
   }
 
-  componentDidMount() {
-    console.log('componentDidMount <App />');
-    setTimeout(() => {
-      console.log('Simulating incoming message');
-      const newMessage = {
-        id: 3,
-        username: 'Michelle',
-        content: 'hehehe'
-      };
-      const messages = this.state.messages.concat(newMessage)
-      this.setState({ messages: messages })
-    }, 3000);
+  newMessage = (username, content) => {
+    const message = { username, content, id: Date.now() };
+    const messages = this.state.messages.concat(message);
+    this.setState({ messages });
   }
 
-  render() {
+  render () {
     return (
       <div>
         <Navbar />
-        {/*<Message user={this.state.currentUser} message={`i am ${this.state.currentUser} and this is me message`}/>*/}
-        <MessageList messages={this.state.messages} />
-        <ChatBar currentUser={this.state.currentUser.name}/>
+        <MessageList messages={ this.state.messages } />
+        <ChatBar user={ this.state.currentUser.name } newMessage={ this.newMessage } content=""/>
       </div>
     );
   }
 }
 
 export default App;
+
+
+  // componentDidMount() {
+  //   console.log('componentDidMount <App />');
+  //   setTimeout(() => {
+  //     console.log('Simulating incoming message');
+  //     const newMessage = {
+  //       // id: 3,
+  //       // username: 'Michelle',
+  //       // content: 'hehehe'
+  //     };
+  //     const messages = this.state.messages.concat(newMessage)
+  //     this.setState({ messages: messages })
+  //   }, 3000);
+  // }
