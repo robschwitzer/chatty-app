@@ -23,6 +23,7 @@ class ChatBar extends Component {
       this.setState({
       username: event.target.value
       });
+      // event.target.value = '';
       //change name back to default if blank
     }
   }

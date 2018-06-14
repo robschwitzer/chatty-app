@@ -6,27 +6,40 @@ import ChatBar from './ChatBar.jsx';
 
 class App extends Component {
   constructor (props) {
-    super ()
+    super();
     this.state = {
       currentUser: { name: this.username },
-      messages: [
-        { id: 1,
-          username: "Bob",
-          content: "i am bob and this is me message"
-        },
-        { id: 2,
-          username: "Anonymous",
-          content: "nice message Bob 🙄"
-        }
-      ]
+      messages: []
     }
   }
 
   newMessage = (username, content) => {
-    const message = { username, content, id: Date.now() };
-    const messages = this.state.messages.concat(message);
-    this.setState({ messages });
+    const message = { username, content };
+    const jsonMsg = JSON.stringify(message); //prepare message for srvr
+    this.socket.send(jsonMsg) // send msg to srvr
   }
+
+  componentDidMount() {
+    this.socket = new WebSocket("ws://localhost:3001"); //create socket
+    this.socket.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      this.setState({
+        messages: [...this.state.messages, message]
+        //                    \/ /\
+        // messages: this.state.messages.concat(message)
+      })
+    }
+    this.socket.onerror = function(error) {
+      console.error('Web Socket Error', error);
+    }
+  }
+
+  componentWillUnmount(){
+    console.log('App::componentWillUnmount');
+    this.socket = null;
+  }
+
+
 
   render () {
     return (
