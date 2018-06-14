@@ -8,7 +8,7 @@ class App extends Component {
   constructor (props) {
     super();
     this.state = {
-      currentUser: { name: this.username },
+      currentUser: {},
       messages: []
     }
   }
@@ -39,14 +39,12 @@ class App extends Component {
     this.socket = null;
   }
 
-
-
   render () {
     return (
       <div>
         <Navbar />
         <MessageList messages={ this.state.messages } />
-        <ChatBar user={ this.state.currentUser.name } newMessage={ this.newMessage } content=""/>
+        <ChatBar user={ this.state.currentUser } newMessage={ this.newMessage } content=""/>
       </div>
     );
   }
