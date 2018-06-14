@@ -6,9 +6,11 @@ import ChatBar from './ChatBar.jsx';
 
 class App extends Component {
   constructor (props) {
-    super();
+    super(props);
     this.state = {
-      currentUser: {},
+      currentUser: {
+        username: 'Anonymous🤓'
+      },
       messages: []
     }
   }
@@ -44,7 +46,7 @@ class App extends Component {
       <div>
         <Navbar />
         <MessageList messages={ this.state.messages } />
-        <ChatBar user={ this.state.currentUser } newMessage={ this.newMessage } content=""/>
+        <ChatBar username={ this.state.currentUser.username } newMessage={ this.newMessage } content=""/>
       </div>
     );
   }

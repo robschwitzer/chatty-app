@@ -2,44 +2,41 @@ import React, { Component } from 'react';
 
 class ChatBar extends Component {
   constructor (props) {
-    super ();
+    super (props);
     this.state = {
-      username: 'Anonymous',
-      content: ''
+      username: this.props.username
     }
   }
 
 
-  enterKey(event) {
+  sendMessage(event) {
     if(event.key === 'Enter') {
-
       //use props from app.js to add new usrname/message combo
       this.props.newMessage(this.state.username, event.target.value)
-      //reset message for to empty
+      //reset message form to empty
       event.target.value = '';
-      this.setState({
-        username: 'Anonymous'
-      })
-      this.refs.test.value = "";
+      // this.refs.test.value = ""; //clears username field on msg send
     }
   }
 
   updateUsername(event) {
-    if (event.target.value) {
+    let username = event.target.value || this.props.username
       this.setState({
-        username: event.target.value
-      });
-    }
+        username
+    });
   }
+
+
 
   render () {
     return (
       <footer className="chatbar">
-        <input className="chatbar-username" ref="test" placeholder="Enter a username" onChange={ this.updateUsername.bind(this) } />
-        <input className="chatbar-message" placeholder="Type a message and hit ENTER" onKeyPress={ this.enterKey.bind(this) } />
+        <input className="chatbar-username" ref="test" placeholder="Enter a username" onBlur={ this.updateUsername.bind(this) } />
+        <input className="chatbar-message" placeholder="Type a message and hit ENTER" onKeyPress={ this.sendMessage.bind(this) } />
       </footer>
     );
   }
+
 }
 
 export default ChatBar;
