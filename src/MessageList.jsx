@@ -8,15 +8,13 @@ class MessageList extends Component {
 
   render () {
     let messages = this.props.messages.map((message, id) => {
+
       return <Message key={ id } message={ message } />
     });
 
     return (
       <main className="messages">
         { messages }
-        {/*<div className="message system">
-          Anonymous1 changed their name to nomnom.
-        </div>*/}
       </main>
     );
   }

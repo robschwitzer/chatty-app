@@ -11,25 +11,40 @@ class App extends Component {
       currentUser: {
         username: 'Anonymous🤓'
       },
-      messages: []
+      messages: [],
+      counter: 0
     }
   }
 
-  newMessage = (username, content) => {
-    const message = { username, content };
+  newMessage = (username, content, type) => {
+    const message = { username, content, type };
     const jsonMsg = JSON.stringify(message); //prepare message for srvr
     this.socket.send(jsonMsg) // send msg to srvr
   }
 
+  updateCount() {
+    let currentCount = this.state.counter;
+    const jsonCount = JSON.stringify(count);
+    this.socket.send(jsonCount)
+  }
+
   componentDidMount() {
-    this.socket = new WebSocket("ws://localhost:3001"); //create socket
+     //create socket
+    this.socket = new WebSocket("ws://localhost:3001");
     this.socket.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      this.setState({
-        messages: [...this.state.messages, message]
-        //                    \/ /\
-        // messages: this.state.messages.concat(message)
-      })
+      console.log(message);
+      if(message.type === 'connect') {
+        this.setState({
+          counter: message.count
+        })
+      } else {
+        this.setState({
+          messages: [...this.state.messages, message],
+           //                \/ = /\                  \\
+          // messages: this.state.messages.concat(message)
+        })
+      }
     }
     this.socket.onerror = function(error) {
       console.error('Web Socket Error', error);
@@ -37,14 +52,13 @@ class App extends Component {
   }
 
   componentWillUnmount(){
-    console.log('App::componentWillUnmount');
     this.socket = null;
   }
 
   render () {
     return (
       <div>
-        <Navbar />
+        <Navbar counter={ this.state.counter } />
         <MessageList messages={ this.state.messages } />
         <ChatBar username={ this.state.currentUser.username } newMessage={ this.newMessage } content=""/>
       </div>
@@ -53,18 +67,3 @@ class App extends Component {
 }
 
 export default App;
-
-
-  // componentDidMount() {
-  //   console.log('componentDidMount <App />');
-  //   setTimeout(() => {
-  //     console.log('Simulating incoming message');
-  //     const newMessage = {
-  //       // id: 3,
-  //       // username: 'Michelle',
-  //       // content: 'hehehe'
-  //     };
-  //     const messages = this.state.messages.concat(newMessage)
-  //     this.setState({ messages: messages })
-  //   }, 3000);
-  // }

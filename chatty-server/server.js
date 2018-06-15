@@ -12,40 +12,43 @@ const server = express()
   .listen(PORT, '0.0.0.0', 'localhost', () => console.log(`Listening on ${ PORT }`));
 
 // Create the WebSockets server
-const wss = new SocketServer({ server });
+const wsServer = new SocketServer({ server });
 
-wss.broadcast = function broadcast(data) {
-  const payload = JSON.stringify(data); //msg object
-  wss.clients.forEach(function each(client) {
-    if (client.readyState === OPEN) {
-      console.log('Sending to client')
-      client.send(payload);
+// Set up a callback that will run when a client connects to the server
+// When a client connects they are assigned a socket, represented by
+// the ws parameter in the callback.s
+
+wsServer.broadcast = function broadcast(data) {
+const payload = JSON.stringify(data); //msg object
+wsServer.clients.forEach(function each(client) {
+  if (client.readyState === OPEN) {
+    console.log('Sending to client')
+    client.send(payload);
     }
   });
 };
 
-// Set up a callback that will run when a client connects to the server
-// When a client connects they are assigned a socket, represented by
-// the ws parameter in the callback.
-wss.on('connection', (ws) => {
+wsServer.on('connection', (socket) => {
   const clientId = uuidv4();
+  const clientsConnected = wsServer.clients.size;
+
   console.log('Client connected', clientId);
 
-  ws.on('message', function incoming(message) {
+  socket.on('message', function incoming(message) {
     const msgContent = JSON.parse(message);
     console.log('received: %s', JSON.stringify(msgContent));
     const msg = {
       id: uuidv4(),
       author: clientId,
       username: msgContent.username,
-      content: msgContent.content
+      content: msgContent.content,
+      type: msgContent.type
     }
-    wss.broadcast(msg);
+    wsServer.broadcast(msg);
   });
 
+  wsServer.broadcast({type: 'connect', count: clientsConnected})
 
-  // Set up a callback for when a client closes the socket. This usually means they closed their browser.
-  ws.on('close', () => console.log('Client disconnected', clientId));
-});
+  socket.on('close', () => wsServer.broadcast({type: 'connect', count: wsServer.clients.size}));
 
-
+})
