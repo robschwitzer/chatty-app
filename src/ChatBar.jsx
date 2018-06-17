@@ -20,13 +20,14 @@ class ChatBar extends Component {
 
   setUsername(event) {
     let username = event.target.value || this.props.username
+    this.setState({
+      username
+    });
+
     if (this.state.username !== username) {
       this.props.newMessage(this.state.username, `${this.state.username} has changed their name to ${username}`, 'notification')
       return null;
     }
-    this.setState({
-      username
-    });
   }
 
   render () {
